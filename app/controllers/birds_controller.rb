@@ -3,7 +3,7 @@ class BirdsController < ApplicationController
   # GET /birds
   def index
     birds = Bird.all
-    render json: birds
+    render json: birds, status: :ok
   end
 
   # POST /birds
@@ -16,16 +16,42 @@ class BirdsController < ApplicationController
   def show
     bird = Bird.find_by(id: params[:id])
     if bird
-      render json: bird
+      render json: bird, status: :ok
     else
       render json: { error: "Bird not found" }, status: :not_found
     end
   end
 
+  # PATCH /birds/:id
+  def update 
+    bird = Bird.find_by(id:params[:id])
+
+    if bird
+      bird.update(bird_params)
+      render json: bird, status: :accepted
+    else
+      render json: {error: "Bird not found"}, status: :not_found
+    end
+  end
+
+  # PATCH /birds/:id
+  # Non-RESTful. Remedy: Create a subresource (another controller) with appropriate REST action. 
+  # Increment likes patch method
+  # def increment_likes 
+  #   bird = Bird.find_by(id:params[:id])
+
+  #   if bird
+  #     bird.update(likes: bird.likes + 1)
+  #     render json: bird, status: :accepted
+  #   else
+  #     render json: {error: "Bird not found"}, status: :not_found
+  #   end
+  # end
+
   private
 
   def bird_params
-    params.permit(:name, :species)
+    params.permit(:name, :species, :likes)
   end
 
 end
